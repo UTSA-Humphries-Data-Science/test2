@@ -2,9 +2,20 @@
   "name": "Data Science Classroom",
   "image": "quay.io/jupyter/datascience-notebook:latest",
   
+  // Run as root temporarily to set up sudo, then switch back to jovyan
+  "remoteUser": "root",
+  "updateRemoteUserUID": false,
+  
+  // Enable sudo access for jovyan user
+  "containerEnv": {
+    "GRANT_SUDO": "yes",
+    "NB_USER": "jovyan",
+    "NB_UID": "1000"
+  },
+  
   // Use conda-based setup - no sudo required
-  "postCreateCommand": "bash .devcontainer/conda_setup.sh",
-  "postStartCommand": "bash .devcontainer/conda_post_start.sh",
+  "postCreateCommand": "echo 'jovyan ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/jovyan && chmod 0440 /etc/sudoers.d/jovyan && chown -R jovyan:users /home/jovyan && su - jovyan -c 'bash .devcontainer/conda_setup.sh'",
+  "postStartCommand": "su - jovyan -c 'bash .devcontainer/conda_post_start.sh'",
 
   "customizations": {
     "vscode": {

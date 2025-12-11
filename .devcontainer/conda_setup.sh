@@ -28,7 +28,8 @@ conda install -c conda-forge -y \
     beautifulsoup4 \
     git \
     nodejs \
-    gh
+    gh \
+    imagemagick
 
 # Install Python packages via pip that aren't available in conda
 echo "🐍 Installing additional Python packages..."
@@ -164,6 +165,24 @@ if (!require('IRkernel', quietly = TRUE)) {
     cat('✅ R packages installed\n')
 } else {
     cat('✅ IRkernel already available\n')
+}
+
+# Install additional R packages for data analysis
+cat('📦 Installing additional R packages...\n')
+additional_packages <- c('magick', 'summarytools')
+
+for (pkg in additional_packages) {
+    if (!require(pkg, character.only = TRUE, quietly = TRUE)) {
+        cat('Installing', pkg, '...\n')
+        tryCatch({
+            install.packages(pkg, repos='https://cran.rstudio.com/', lib=user_lib, quiet=FALSE)
+            cat('✅', pkg, 'installed\n')
+        }, error = function(e) {
+            cat('⚠️ Failed to install', pkg, ':', conditionMessage(e), '\n')
+        })
+    } else {
+        cat('✅', pkg, 'already installed\n')
+    }
 }
 
 # Register kernel with Jupyter

@@ -1,7 +1,19 @@
 #!/bin/bash
 
-echo "🔧 Setting up R Kernel for Jupyter - Student Quick Fix"
-echo "This script ensures the R kernel is properly configured for your assignment."
+echo "🔧 R Kernel Setup - Manual Run Script"
+echo "NOTE: R kernel setup is now automatic during container build."
+echo "This script is only needed if you need to manually fix/reinstall the R kernel."
+echo ""
+read -p "Do you want to continue with manual setup? (y/N) " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo "ℹ️  Exiting. R kernel should already be configured automatically."
+    exit 0
+fi
+
+echo ""
+echo "Proceeding with manual R kernel setup..."
+echo ""
 
 # Function to check if command exists
 command_exists() {

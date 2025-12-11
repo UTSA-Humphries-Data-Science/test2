@@ -1,18 +1,35 @@
 # Scripts
 
-Essential utility scripts for environment management:
+**⚠️ NOTE: Most setup is now AUTOMATIC during container build!**
 
-## Student Scripts
-- `test_setup.py` - Test Python packages and database connectivity
-- `fix_git.sh` - Fix Git configuration issues for commits
+These scripts are primarily for **manual fixes** and **troubleshooting**. The R kernel, PostgreSQL, and packages are automatically configured when the devcontainer builds via `.devcontainer/conda_setup.sh`.
 
-## System Scripts
-- `start_postgresql.sh` - Start PostgreSQL service
-- `test_student_db.sh` - Test student database and demo data
-- `setup_r_kernel.sh` - Setup R kernel for Jupyter
-- `load_databases.sh` - Load demo databases (Northwind, Sakila)
+## Manual Override Scripts (Use only if needed)
 
-## Maintenance Scripts
-- `setup_database.sh` - Database setup and configuration
-- `install_r_packages.sh` - Install R packages
-- `autostart_postgresql.sh` - Auto-start PostgreSQL on boot
+### R Environment
+- `setup_r_kernel.sh` - **Manual** R kernel setup (automatic during build)
+- `install_r_packages.sh` - Install additional R packages
+- `check_r_kernel_status.sh` - Check R kernel status
+- `test_r_kernel.sh` - Test R kernel functionality
+
+### Database Scripts
+- `start_postgresql.sh` - Start PostgreSQL service manually
+- `autostart_postgresql.sh` - Configure PostgreSQL auto-start
+- `setup_student_primary.sh` - Setup student database user
+- `fix_database_permissions.sh` - Fix database permissions
+- `load_all_sample_databases.sh` - Load sample databases
+
+### Utilities
+- `fix_git.sh` - Fix Git configuration issues
+
+## When to Use These Scripts
+
+**You typically DON'T need to run these scripts** because:
+- R kernel is set up automatically during container build
+- PostgreSQL starts automatically
+- ImageMagick and R packages (magick, summarytools) install automatically
+
+**Only run these scripts if:**
+- You need to reinstall/fix a broken R kernel
+- You need to manually restart PostgreSQL
+- You're troubleshooting specific issues
