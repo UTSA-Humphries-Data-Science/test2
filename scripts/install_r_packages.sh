@@ -31,7 +31,7 @@ essential_packages <- c(
     "broom", "scales", "plotly", "RColorBrewer", "ggdendro", "GGally",
     
     # Data manipulation
-    "reshape2", "data.table", "fastDummies",
+    "reshape", "reshape2", "data.table", "fastDummies",
     
     # Module 1: Data Exploration and Statistics
     "Hmisc",      # High-level graphics, describe(), data analysis utilities
