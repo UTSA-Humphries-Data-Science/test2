@@ -15,8 +15,8 @@
   
   // Use conda-based setup - no sudo required
   // Install system dependencies for R packages (nloptr needs libnlopt-dev)
-  "postCreateCommand": "apt-get update && apt-get install -y libnlopt-dev cmake && echo 'jovyan ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/jovyan && chmod 0440 /etc/sudoers.d/jovyan && chown -R jovyan:users /home/jovyan && su - jovyan -c 'bash .devcontainer/conda_setup.sh'",
-  "postStartCommand": "su - jovyan -c 'bash .devcontainer/conda_post_start.sh'",
+  "postCreateCommand": "apt-get update && apt-get install -y libnlopt-dev cmake && echo 'jovyan ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/jovyan && chmod 0440 /etc/sudoers.d/jovyan && chown -R jovyan:users /home/jovyan && su - jovyan -c 'cd /workspaces/test2 && bash .devcontainer/conda_setup.sh'",
+  "postStartCommand": "su - jovyan -c 'cd /workspaces/test2 && bash .devcontainer/conda_post_start.sh'",
 
   "customizations": {
     "vscode": {

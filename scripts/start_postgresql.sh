@@ -38,7 +38,7 @@ fi
 
 # Load demo databases if not already loaded
 echo "📊 Checking demo databases..."
-cd /workspaces/data-management-classroom
+cd /workspaces/test2
 
 # Check if Northwind is loaded
 if ! psql -d student -tAc "SELECT 1 FROM information_schema.tables WHERE table_name='customers' LIMIT 1" 2>/dev/null | grep -q 1; then

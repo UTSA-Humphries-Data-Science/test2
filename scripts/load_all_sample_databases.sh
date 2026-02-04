@@ -37,7 +37,7 @@ DB_USER="student"
 DB_NAME="postgres"
 DB_HOST="localhost"
 DB_PORT="5432"
-DATABASES_DIR="/workspaces/data-management-classroom/databases"
+DATABASES_DIR="/workspaces/test2/databases"
 
 # Set environment variables for this session
 export PGUSER="$DB_USER"

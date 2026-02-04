@@ -1,4 +1,4 @@
-#!/bin/bash.
+#!/bin/bash
 # Conda-based post-start script - NO SUDO REQUIRED!
 # This runs every time the codespace is started/resumed
 
@@ -8,10 +8,13 @@ echo "📋 Current user: $(whoami)"
 # Source environment
 source ~/.bashrc 2>/dev/null || true
 
+# Change to workspace directory to ensure relative paths work
+cd /workspaces/test2 || cd "$(dirname "$0")/.." || true
+
 # Check if PostgreSQL data directory exists
 if [ ! -d "$HOME/postgres_data" ]; then
     echo "⚠️ PostgreSQL data directory not found, running setup..."
-    bash .devcontainer/conda_setup.sh
+    bash /workspaces/test2/.devcontainer/conda_setup.sh
     source ~/.bashrc
 fi
 
@@ -43,17 +46,17 @@ fi
 
 # Configure student as primary database user (final step)
 echo "� Configuring student user as primary for database operations..."
-if [ -f "/workspaces/data-management-classroom/scripts/setup_student_primary.sh" ]; then
+if [ -f "/workspaces/test2/scripts/setup_student_primary.sh" ]; then
     # Run our comprehensive student setup script
-    bash /workspaces/data-management-classroom/scripts/setup_student_primary.sh
+    bash /workspaces/test2/scripts/setup_student_primary.sh
     
     # Source the new environment for this session
     source ~/.bashrc 2>/dev/null || true
     
     # Load all sample databases as the final step
     echo "� Loading all sample databases..."
-    if [ -f "/workspaces/data-management-classroom/scripts/load_all_sample_databases.sh" ]; then
-        bash /workspaces/data-management-classroom/scripts/load_all_sample_databases.sh
+    if [ -f "/workspaces/test2/scripts/load_all_sample_databases.sh" ]; then
+        bash /workspaces/test2/scripts/load_all_sample_databases.sh
         echo "✅ All sample databases loaded and ready"
     else
         echo "⚠️ Sample database loader not found"
@@ -120,8 +123,8 @@ if jupyter kernelspec list 2>/dev/null | grep -q "ir"; then
 else
     echo "⚠️ R kernel not found, setting up..."
     # Run R kernel setup if missing
-    if [ -f "/workspaces/data-management-classroom/scripts/setup_r_kernel.sh" ]; then
-        bash /workspaces/data-management-classroom/scripts/setup_r_kernel.sh
+    if [ -f "/workspaces/test2/scripts/setup_r_kernel.sh" ]; then
+        bash /workspaces/test2/scripts/setup_r_kernel.sh
     else
         # Inline R kernel setup
         R -e "

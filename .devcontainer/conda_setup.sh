@@ -169,7 +169,20 @@ if (!require('IRkernel', quietly = TRUE)) {
 
 # Install additional R packages for data analysis
 cat('📦 Installing additional R packages...\n')
-additional_packages <- c('magick', 'summarytools')
+additional_packages <- c(
+    # Core data science packages
+    'tidyverse', 'dplyr', 'ggplot2', 'tidyr', 'readr', 'purrr', 'stringr',
+    # Machine learning and statistics
+    'caret', 'Hmisc', 'MASS', 'e1071', 'class', 'randomForest',
+    # Visualization
+    'ggrepel', 'gridExtra', 'GGally', 'ggdendro', 'corrplot',
+    # Clustering and dimensionality reduction
+    'factoextra', 'FactoMineR', 'cluster',
+    # Discriminant analysis
+    'DiscriMiner',
+    # Other utilities
+    'magick', 'summarytools', 'mlba', 'lattice', 'nloptr'
+)
 
 for (pkg in additional_packages) {
     if (!require(pkg, character.only = TRUE, quietly = TRUE)) {

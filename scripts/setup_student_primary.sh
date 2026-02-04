@@ -138,8 +138,8 @@ export PGPORT=5432
 # Aliases for easy database access
 alias psql-student='psql -U student -d student_db -h localhost'
 alias psql-postgres='psql -U student -d postgres -h localhost'
-alias load-northwind='psql -U student -d postgres -h localhost -f /workspaces/data-management-classroom/databases/northwind.sql'
-alias load-all-dbs='bash /workspaces/data-management-classroom/scripts/load_all_sample_databases.sh'
+alias load-northwind='psql -U student -d postgres -h localhost -f /workspaces/test2/databases/northwind.sql'
+alias load-all-dbs='bash /workspaces/test2/scripts/load_all_sample_databases.sh'
 
 EOF
     print_success "Environment variables added to ~/.bashrc"
@@ -164,7 +164,7 @@ fi
 # Fix database permissions to use student user (only if not already done)
 if [ ! -f "/tmp/.db_permissions_fixed" ]; then
     print_status "Fixing database permissions..."
-    if bash /workspaces/data-management-classroom/scripts/fix_database_permissions.sh; then
+    if bash /workspaces/test2/scripts/fix_database_permissions.sh; then
         print_success "Database permissions fixed for student user"
         touch /tmp/.db_permissions_fixed
     else

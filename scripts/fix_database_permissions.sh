@@ -28,8 +28,8 @@ print_warning() {
     echo -e "${YELLOW}[WARNING]${NC} $1"
 }
 
-DATABASES_DIR="/workspaces/data-management-classroom/databases"
-BACKUP_DIR="/workspaces/data-management-classroom/databases/backup_$(date +%Y%m%d_%H%M%S)"
+DATABASES_DIR="/workspaces/test2/databases"
+BACKUP_DIR="/workspaces/test2/databases/backup_$(date +%Y%m%d_%H%M%S)"
 
 # Create backup directory
 print_status "Creating backup of original database files..."
