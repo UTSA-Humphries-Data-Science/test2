@@ -1,21 +1,21 @@
 {
   "name": "Data Science Classroom",
-  "image": "quay.io/jupyter/datascience-notebook:latest",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
   
-  // Run as root for initial setup commands
+  // Container settings
   "overrideCommand": false,
   "updateRemoteUserUID": false,
   
-  // Enable sudo access for jovyan user (built into jupyter image)
+  // Environment variables
   "containerEnv": {
-    "GRANT_SUDO": "yes",
     "NB_USER": "jovyan",
     "NB_UID": "1000"
   },
   
-  // postCreateCommand runs as root (before remoteUser switch)
-  // Install system dependencies and set up passwordless sudo for jovyan
-  "postCreateCommand": "apt-get update && apt-get install -y libnlopt-dev cmake postgresql postgresql-contrib && echo 'jovyan ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/jovyan && chmod 0440 /etc/sudoers.d/jovyan && chown -R jovyan:users /home/jovyan && su - jovyan -c 'cd /workspaces/test2 && bash .devcontainer/conda_setup.sh'",
+  // postCreateCommand runs as jovyan (system packages already installed via Dockerfile)
+  "postCreateCommand": "bash /workspaces/test2/.devcontainer/conda_setup.sh",
   "postStartCommand": "bash /workspaces/test2/.devcontainer/conda_post_start.sh",
 
   "customizations": {
