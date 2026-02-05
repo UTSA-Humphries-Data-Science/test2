@@ -38,9 +38,8 @@
         "eamodio.gitlens"
       ],
       "settings": {
-        // === DISABLE SETTINGS SYNC (prevent personal settings from loading) ===
-        "settingsSync.ignoredSettings": ["*"],
-        "settingsSync.ignoredExtensions": ["*"],
+        // === DISABLE SETTINGS SYNC COMPLETELY ===
+        "settingsSync.enable": false,
         
         // === CORE SETTINGS ===
         "python.defaultInterpreterPath": "/opt/conda/bin/python",
