@@ -161,6 +161,8 @@ cat("📦 Installing R packages with parallel compilation...\n")
 core_packages <- c(
     # IRkernel (must be first)
     "IRkernel", "repr", "IRdisplay", "pbdZMQ", "uuid", "digest",
+    # R language server for VS Code
+    "languageserver",
     # Tidyverse essentials
     "tidyverse", "dplyr", "ggplot2", "readr", "tibble",
     # Statistics packages used in assignments

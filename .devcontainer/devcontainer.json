@@ -46,7 +46,6 @@
         "mtxr.sqltools-driver-sqlite",
         "mtxr.sqltools-driver-mssql",
         "mtxr.sqltools-driver-mysql",
-        "koszti.dotnet-test-explorer",
         "mechatroner.rainbow-csv",
         "janisdd.vscode-edit-csv",
         "ms-vscode.hexeditor",
@@ -77,6 +76,8 @@
         "r.rpath": "/opt/conda/bin/R",
         "r.rterm.linux": "/opt/conda/bin/R",
         "r.alwaysUseActiveTerminal": true,
+        "r.lsp.promptToInstall": false,
+        "r.rterm.option": [],
         "jupyter.jupyterServerType": "local",
         "jupyter.kernels.filter": [],
         "files.associations": {
