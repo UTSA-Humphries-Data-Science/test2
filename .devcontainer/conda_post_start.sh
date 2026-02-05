@@ -1,164 +1,110 @@
 #!/bin/bash
-# Conda-based post-start script - NO SUDO REQUIRED!
-# This runs every time the codespace is started/resumed
+# Optimized post-start script - runs every time the codespace starts/resumes
+# Uses apt-installed PostgreSQL with student user (no password)
+# NOTE: This script runs after postCreateCommand has set up passwordless sudo
 
-echo "🔄 Post-start: Checking conda environment..."
-echo "📋 Current user: $(whoami)"
+echo "🔄 Post-start: Verifying environment..."
 
 # Source environment
 source ~/.bashrc 2>/dev/null || true
+cd /workspaces/test2 2>/dev/null || true
 
-# Change to workspace directory to ensure relative paths work
-cd /workspaces/test2 || cd "$(dirname "$0")/.." || true
-
-# Check if PostgreSQL data directory exists
-if [ ! -d "$HOME/postgres_data" ]; then
-    echo "⚠️ PostgreSQL data directory not found, running setup..."
-    bash /workspaces/test2/.devcontainer/conda_setup.sh
-    source ~/.bashrc
-fi
-
-# Set PostgreSQL environment variables for this session
-export PGDATA="$HOME/postgres_data"
-export PGUSER=jovyan
-export PGDATABASE=jovyan
+# Set PostgreSQL environment - student user (no password)
+export PGUSER=student
+export PGDATABASE=postgres
 export PGHOST=localhost
 export PGPORT=5432
 
-# Start PostgreSQL if not running
-if ! pg_ctl -D "$PGDATA" status >/dev/null 2>&1; then
-    echo "🚀 Starting PostgreSQL..."
-    pg_ctl -D "$PGDATA" start -l "$HOME/postgres.log" -w
+# ============================================
+# Check 1: Start PostgreSQL service if not running
+# ============================================
+# Try with sudo (should be passwordless after postCreateCommand)
+if sudo -n service postgresql status >/dev/null 2>&1; then
+    echo "✅ PostgreSQL running"
+elif sudo -n true 2>/dev/null; then
+    echo "🚀 Starting PostgreSQL service..."
+    sudo service postgresql start
     sleep 2
-    
-    # Create initial databases if they don't exist
-    for db in jovyan vscode student; do
-        if ! psql -lqt | cut -d \| -f 1 | grep -qw "$db"; then
-            echo "📋 Creating $db database..."
-            createdb "$db"
-        fi
-    done
-    
     echo "✅ PostgreSQL started"
 else
-    echo "✅ PostgreSQL already running"
+    # No sudo available, try psql directly to see if it works
+    if psql -U student -h localhost -c "SELECT 1;" >/dev/null 2>&1; then
+        echo "✅ PostgreSQL running (connected as student)"
+    else
+        echo "⚠️ PostgreSQL status unknown - may need manual start"
+    fi
 fi
 
-# Configure student as primary database user (final step)
-echo "� Configuring student user as primary for database operations..."
+# ============================================
+# Check 2: Ensure student user exists (if we have sudo)
+# ============================================
+if sudo -n true 2>/dev/null; then
+    if ! sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='student'" 2>/dev/null | grep -q 1; then
+        echo "👤 Creating student user..."
+        sudo -u postgres psql -c "CREATE USER student WITH SUPERUSER CREATEDB;" 2>/dev/null
+    fi
+fi
+echo "✅ Student user configured"
+
+# ============================================
+# Check 3: Configure student user for database
+# ============================================
 if [ -f "/workspaces/test2/scripts/setup_student_primary.sh" ]; then
-    # Run our comprehensive student setup script
-    bash /workspaces/test2/scripts/setup_student_primary.sh
-    
-    # Source the new environment for this session
-    source ~/.bashrc 2>/dev/null || true
-    
-    # Load all sample databases as the final step
-    echo "� Loading all sample databases..."
-    if [ -f "/workspaces/test2/scripts/load_all_sample_databases.sh" ]; then
-        bash /workspaces/test2/scripts/load_all_sample_databases.sh
-        echo "✅ All sample databases loaded and ready"
-    else
-        echo "⚠️ Sample database loader not found"
-    fi
-else
-    echo "⚠️ Student primary setup script not found, using fallback..."
-    
-    # Fallback: Basic student user setup
-    if ! psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='student'" | grep -q 1; then
-        echo "� Creating student user..."
-        psql -c "CREATE USER student WITH PASSWORD 'student123' CREATEDB SUPERUSER;"
-        psql -c "GRANT ALL PRIVILEGES ON DATABASE student TO student;"
-        psql -c "GRANT ALL PRIVILEGES ON DATABASE postgres TO student;"
-    fi
+    bash /workspaces/test2/scripts/setup_student_primary.sh 2>/dev/null
 fi
 
-# Test database connectivity with student user
-echo "🔍 Testing database connection..."
-if psql -U student -h localhost -d postgres -c "SELECT current_user, current_database(), version();" >/dev/null 2>&1; then
-    echo "✅ Student user database connection working"
-    psql -U student -h localhost -d postgres -c "SELECT 
-        '🗄️ Connected as: ' || current_user as user_info,
-        '📊 Database: ' || current_database() as db_info;" 2>/dev/null
-    
-    # Show available schemas
-    echo "📋 Available database schemas:"
-    psql -U student -h localhost -d postgres -c "SELECT '  • ' || schema_name as schemas FROM information_schema.schemata WHERE schema_name NOT IN ('information_schema', 'pg_catalog', 'pg_toast') ORDER BY schema_name;" -t 2>/dev/null
-else
-    echo "⚠️ Student user database connection failed, trying fallback..."
-    if psql -c "SELECT current_user, current_database(), version();" >/dev/null 2>&1; then
-        echo "✅ Fallback database connection working (jovyan user)"
-        psql -c "SELECT 
-            '🗄️ Connected as: ' || current_user as user_info,
-            '📊 Database: ' || current_database() as db_info;" 2>/dev/null
-    else
-        echo "⚠️ Database connection failed"
-        echo "🔧 Check PostgreSQL status with: pg_status"
-        echo "🔧 Start PostgreSQL with: pg_start"
-        echo "🔧 View logs with: tail -f ~/postgres.log"
-    fi
+# Load sample databases if script exists
+if [ -f "/workspaces/test2/scripts/load_all_sample_databases.sh" ]; then
+    bash /workspaces/test2/scripts/load_all_sample_databases.sh 2>/dev/null
 fi
 
-# Verify Jupyter configuration
-if [ -f ~/.jupyter/jupyter_server_config.py ]; then
-    echo "✅ Jupyter configured for zero-touch access"
-else
-    echo "⚠️ Jupyter configuration missing, recreating..."
-    mkdir -p ~/.jupyter
-    cat > ~/.jupyter/jupyter_server_config.py << 'EOF'
-c.ServerApp.token = ''
-c.ServerApp.password = ''
-c.ServerApp.open_browser = False
-c.ServerApp.ip = '0.0.0.0'
-c.ServerApp.allow_origin = '*'
-c.ServerApp.disable_check_xsrf = True
+# ============================================
+# Check 4: Verify R kernel
+# ============================================
+if ! jupyter kernelspec list 2>/dev/null | grep -q "ir"; then
+    echo "⚠️ R kernel missing, registering..."
+    R --quiet --no-save -e "IRkernel::installspec(user = TRUE)" 2>/dev/null
+fi
+echo "✅ R kernel available"
+
+# ============================================
+# Check 5: Verify mlba package
+# ============================================
+R --quiet --no-save << 'EOF' 2>/dev/null
+if (!requireNamespace("mlba", quietly = TRUE)) {
+    cat("⚠️ mlba package missing, installing from GitHub...\n")
+    if (requireNamespace("devtools", quietly = TRUE)) {
+        tryCatch({
+            devtools::install_github("gedeck/mlba/mlba", quiet = TRUE, upgrade = "never")
+            cat("✅ mlba package installed\n")
+        }, error = function(e) {
+            cat("⚠️ mlba installation failed - students should run:\n")
+            cat("   devtools::install_github('gedeck/mlba/mlba')\n")
+        })
+    }
+} else {
+    cat("✅ mlba package available\n")
+}
 EOF
-    echo "✅ Jupyter configuration restored"
-fi
 
-# Verify R kernel is available
-echo "🔍 Checking R kernel availability..."
-if jupyter kernelspec list 2>/dev/null | grep -q "ir"; then
-    echo "✅ R kernel is available"
-else
-    echo "⚠️ R kernel not found, setting up..."
-    # Run R kernel setup if missing
-    if [ -f "/workspaces/test2/scripts/setup_r_kernel.sh" ]; then
-        bash /workspaces/test2/scripts/setup_r_kernel.sh
-    else
-        # Inline R kernel setup
-        R -e "
-        user_lib <- '~/R'
-        if (!dir.exists(user_lib)) dir.create(user_lib, recursive = TRUE)
-        .libPaths(c(user_lib, .libPaths()))
-        if (require('IRkernel', quietly = TRUE)) {
-            IRkernel::installspec(user = TRUE)
-            cat('✅ R kernel registered\n')
-        }
-        " 2>/dev/null
-    fi
-fi
-
-echo "✅ Post-start check complete"
-echo "🎓 Environment ready for data science work!"
-
-# Ensure Git is properly configured for students (avoid GPG issues)
-echo "🛠️ Ensuring Git configuration for GitHub Classroom..."
+# ============================================
+# Ensure Git is configured for commits
+# ============================================
 git config --global commit.gpgsign false 2>/dev/null || true
 git config --global tag.gpgsign false 2>/dev/null || true
 git config --local commit.gpgsign false 2>/dev/null || true
-git config --local tag.gpgsign false 2>/dev/null || true
-echo "✅ Git configured for seamless commits and pushes"
 
+# ============================================
+# Final status
+# ============================================
+echo ""
+echo "════════════════════════════════════════════"
+echo "✅ Environment ready for data science work!"
+echo "════════════════════════════════════════════"
 echo ""
 echo "💡 Quick commands:"
-echo "   📊 Start Jupyter Lab: jupyter lab"
-echo "   🗄️ Connect to database: psql (connects as student user to postgres db)"
-echo "   🔍 Query Northwind customers: psql -c \"SELECT * FROM northwind.customers LIMIT 5;\""
-echo "   📋 List all schemas: psql -c \"\\dn\""
-echo "   🔄 See all tables: psql -c \"SELECT * FROM shortcuts.all_tables;\""
-echo "   📈 PostgreSQL status: pg_status"
-echo "   🔄 Restart PostgreSQL: pg_restart"
-echo "   📝 Git status: git status"
-echo "   📤 Commit changes: git add . && git commit -m 'Your message'"
-echo "   🚀 Push to GitHub: git push"
+echo "   📊 Open notebooks in the Lecture/ folder"
+echo "   🗄️ psql - Connect to database as student (no password)"
+echo "   📈 sudo service postgresql status - Check PostgreSQL"
+echo "   🔍 check_status - Full environment check"
+echo ""

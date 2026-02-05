@@ -120,8 +120,23 @@ cat("🎉 R package installation complete!\n")
 # Install packages from GitHub (not available on CRAN)
 cat("\n📦 Installing packages from GitHub...\n")
 if (requireNamespace("devtools", quietly = TRUE)) {
-    devtools::install_github("gastonstat/DiscriMiner")
-    cat("✅ DiscriMiner installed from GitHub\n")
+    # Install mlba package (required for assignments)
+    cat("Installing mlba from GitHub...\n")
+    tryCatch({
+        devtools::install_github("gedeck/mlba/mlba", quiet = TRUE, upgrade = "never")
+        cat("✅ mlba installed from GitHub\n")
+    }, error = function(e) {
+        cat("⚠️ mlba installation failed:", conditionMessage(e), "\n")
+    })
+    
+    # Install DiscriMiner
+    cat("Installing DiscriMiner from GitHub...\n")
+    tryCatch({
+        devtools::install_github("gastonstat/DiscriMiner", quiet = TRUE, upgrade = "never")
+        cat("✅ DiscriMiner installed from GitHub\n")
+    }, error = function(e) {
+        cat("⚠️ DiscriMiner installation failed:", conditionMessage(e), "\n")
+    })
 } else {
     cat("⚠️ devtools not available, skipping GitHub packages\n")
 }

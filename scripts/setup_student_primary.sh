@@ -45,27 +45,28 @@ print_status "Setting up student user and database..."
 
 # Create a temporary SQL file for setup
 cat > /tmp/setup_student.sql << 'EOF'
--- Create student user if it doesn't exist
+-- Create student user if it doesn't exist (NO PASSWORD for classroom use)
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'student') THEN
-        CREATE USER student WITH PASSWORD 'student123' CREATEDB SUPERUSER;
-        RAISE NOTICE 'Created student user';
+        CREATE USER student WITH SUPERUSER CREATEDB;
+        RAISE NOTICE 'Created student user (no password)';
     ELSE
-        ALTER USER student WITH PASSWORD 'student123' CREATEDB SUPERUSER;
-        RAISE NOTICE 'Updated student user permissions';
+        ALTER USER student WITH SUPERUSER CREATEDB;
+        ALTER USER student WITH PASSWORD NULL;
+        RAISE NOTICE 'Updated student user permissions (no password)';
     END IF;
 END
 $$;
 
--- Create vscode user if it doesn't exist
+-- Create vscode user if it doesn't exist (NO PASSWORD for classroom use)
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'vscode') THEN
-        CREATE USER vscode WITH PASSWORD 'vscode123' CREATEDB SUPERUSER;
-        RAISE NOTICE 'Created vscode user';
+        CREATE USER vscode WITH SUPERUSER CREATEDB;
+        RAISE NOTICE 'Created vscode user (no password)';
     ELSE
-        ALTER USER vscode WITH PASSWORD 'vscode123' CREATEDB SUPERUSER;
+        ALTER USER vscode WITH SUPERUSER CREATEDB;
         RAISE NOTICE 'Updated vscode user permissions';
     END IF;
 END

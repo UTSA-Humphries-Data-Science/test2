@@ -1,69 +1,32 @@
 #!/bin/bash
-# Quick PostgreSQL starter script for conda-based installation
+# Quick PostgreSQL starter script for apt-installed PostgreSQL
 # Run this if PostgreSQL is not running
 
-echo "🔄 Starting PostgreSQL (conda-based)..."
+echo "🔄 Starting PostgreSQL..."
 
-# Set environment variables
-export PGDATA="$HOME/postgres_data"
-export PGUSER=jovyan
-export PGDATABASE=jovyan
+# Set environment variables - student user (no password)
+export PGUSER=student
+export PGDATABASE=postgres
 export PGHOST=localhost
 export PGPORT=5432
 
 # Check if PostgreSQL is already running
-if pg_ctl -D "$PGDATA" status >/dev/null 2>&1; then
+if sudo -n service postgresql status >/dev/null 2>&1; then
+    echo "✅ PostgreSQL is already running"
+elif psql -U student -h localhost -c "SELECT 1;" >/dev/null 2>&1; then
     echo "✅ PostgreSQL is already running"
 else
-    echo "🚀 Starting PostgreSQL server..."
-    pg_ctl -D "$PGDATA" start -l "$HOME/postgres.log" -w
+    echo "🚀 Starting PostgreSQL service..."
+    sudo service postgresql start
     sleep 2
+    echo "✅ PostgreSQL started"
 fi
 
-# Create databases if they don't exist
-for db in jovyan vscode student; do
-    if ! psql -lqt | cut -d \| -f 1 | grep -qw "$db"; then
-        echo "📋 Creating $db database..."
-        createdb "$db"
-    fi
-done
-
-# Create student user if it doesn't exist
-if ! psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='student'" | grep -q 1; then
-    echo "👤 Creating student user (no password)..."
-    psql -c "CREATE USER student;"
-    psql -c "GRANT ALL PRIVILEGES ON DATABASE student TO student;"
-    psql -c "ALTER USER student CREATEDB;"
-fi
-
-# Load demo databases if not already loaded
-echo "📊 Checking demo databases..."
-cd /workspaces/test2
-
-# Check if Northwind is loaded
-if ! psql -d student -tAc "SELECT 1 FROM information_schema.tables WHERE table_name='customers' LIMIT 1" 2>/dev/null | grep -q 1; then
-    if [ -f "databases/northwind.sql" ]; then
-        echo "📦 Loading Northwind database..."
-        psql -d student -f databases/northwind.sql > /dev/null 2>&1
-        echo "✅ Northwind database loaded"
-    fi
-fi
-
-# Check if Sakila is loaded  
-if ! psql -d student -tAc "SELECT 1 FROM information_schema.tables WHERE table_name='actor' LIMIT 1" 2>/dev/null | grep -q 1; then
-    if [ -f "databases/sakila.sql" ]; then
-        echo "📦 Loading Sakila database..."
-        psql -d student -f databases/sakila.sql > /dev/null 2>&1
-        echo "✅ Sakila database loaded"
-    fi
-fi
-
-# Test connection
-if psql -c "SELECT 'PostgreSQL is working!' as message, version();" >/dev/null 2>&1; then
-    echo "✅ Database connection confirmed"
-    echo "🎉 R PostgreSQL connectivity is ready!"
-    psql -c "SELECT current_user, current_database();"
+# Test connection as student user
+echo "🔍 Testing student user connection..."
+if psql -U student -h localhost -c "SELECT current_user, current_database();" 2>/dev/null; then
+    echo "✅ Student user connection working (no password)"
 else
-    echo "⚠️ Connection test failed"
-    echo "🔧 Check PostgreSQL logs: tail -f ~/postgres.log"
+    echo "⚠️ Student user connection failed"
+    echo "   Try: sudo -u postgres psql -c \"CREATE USER student WITH SUPERUSER CREATEDB;\""
 fi

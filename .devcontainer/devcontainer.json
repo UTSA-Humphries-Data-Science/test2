@@ -2,21 +2,21 @@
   "name": "Data Science Classroom",
   "image": "quay.io/jupyter/datascience-notebook:latest",
   
-  // Run as root temporarily to set up sudo, then switch back to jovyan
-  "remoteUser": "root",
+  // Run as root for initial setup commands
+  "overrideCommand": false,
   "updateRemoteUserUID": false,
   
-  // Enable sudo access for jovyan user
+  // Enable sudo access for jovyan user (built into jupyter image)
   "containerEnv": {
     "GRANT_SUDO": "yes",
     "NB_USER": "jovyan",
     "NB_UID": "1000"
   },
   
-  // Use conda-based setup - no sudo required
-  // Install system dependencies for R packages (nloptr needs libnlopt-dev)
-  "postCreateCommand": "apt-get update && apt-get install -y libnlopt-dev cmake && echo 'jovyan ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/jovyan && chmod 0440 /etc/sudoers.d/jovyan && chown -R jovyan:users /home/jovyan && su - jovyan -c 'cd /workspaces/test2 && bash .devcontainer/conda_setup.sh'",
-  "postStartCommand": "su - jovyan -c 'cd /workspaces/test2 && bash .devcontainer/conda_post_start.sh'",
+  // postCreateCommand runs as root (before remoteUser switch)
+  // Install system dependencies and set up passwordless sudo for jovyan
+  "postCreateCommand": "apt-get update && apt-get install -y libnlopt-dev cmake postgresql postgresql-contrib && echo 'jovyan ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/jovyan && chmod 0440 /etc/sudoers.d/jovyan && chown -R jovyan:users /home/jovyan && su - jovyan -c 'cd /workspaces/test2 && bash .devcontainer/conda_setup.sh'",
+  "postStartCommand": "bash /workspaces/test2/.devcontainer/conda_post_start.sh",
 
   "customizations": {
     "vscode": {
@@ -115,9 +115,9 @@
             "driver": "PostgreSQL",
             "server": "localhost",
             "port": 5432,
-            "database": "${env:PGDATABASE}",
-            "username": "${env:PGUSER}",
-            "password": "${env:PGPASSWORD}",
+            "database": "postgres",
+            "username": "student",
+            "password": "",
             "connectionTimeout": 0
           }
         ]
@@ -149,6 +149,7 @@
     }
   },
 
+  // Use jovyan as the default user after container creation
   "remoteUser": "jovyan",
 
   "runArgs": [
