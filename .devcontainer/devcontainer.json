@@ -41,6 +41,10 @@
         // === DISABLE SETTINGS SYNC COMPLETELY ===
         "settingsSync.enable": false,
         
+        // === AUTO-UPDATE EXTENSIONS ===
+        "extensions.autoUpdate": true,
+        "extensions.autoCheckUpdates": true,
+        
         // === CORE SETTINGS ===
         "python.defaultInterpreterPath": "/opt/conda/bin/python",
         "python.terminal.activateEnvironment": true,
