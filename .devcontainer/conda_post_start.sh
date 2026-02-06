@@ -90,9 +90,30 @@ EOF
 # ============================================
 # Ensure Git is configured for commits
 # ============================================
+echo "🔧 Configuring Git..."
 git config --global commit.gpgsign false 2>/dev/null || true
 git config --global tag.gpgsign false 2>/dev/null || true
 git config --local commit.gpgsign false 2>/dev/null || true
+git config --local tag.gpgsign false 2>/dev/null || true
+
+# Set default branch to main
+git config --global init.defaultBranch main 2>/dev/null || true
+
+# Set up basic user info if not set
+if [ -z "$(git config --get user.name)" ]; then
+    git config --global user.name "Data Science Student"
+fi
+
+if [ -z "$(git config --get user.email)" ]; then
+    git config --global user.email "student@example.com"
+fi
+
+# Ensure git is recognized in this workspace
+if git status >/dev/null 2>&1; then
+    echo "✅ Git repository configured"
+else
+    echo "⚠️ Not in a Git repository"
+fi
 
 # ============================================
 # Final status
