@@ -55,65 +55,31 @@ RUN pip install --no-cache-dir \
   pytest pytest-cov \
   black flake8 autopep8
 
-# ---- R packages: Jupyter kernel & IDE support ----
-RUN R -e "install.packages(c( \
+# ---- R packages: Use Posit Package Manager for PRE-COMPILED binaries (MUCH faster) ----
+# This uses pre-built binaries instead of compiling from source
+RUN R -e "options(repos = c(CRAN = 'https://packagemanager.posit.co/cran/__linux__/jammy/latest')); \
+  install.packages(c( \
   'IRkernel', 'repr', 'IRdisplay', 'pbdZMQ', 'uuid', 'digest', \
-  'languageserver', 'httpgd' \
-  ), repos='https://cloud.r-project.org', Ncpus=4)"
-
-# ---- R packages: Core tidyverse & data manipulation ----
-RUN R -e "install.packages(c( \
+  'languageserver', 'httpgd', \
   'tidyverse', 'dplyr', 'ggplot2', 'readr', 'tidyr', 'tibble', \
   'stringr', 'forcats', 'lubridate', 'purrr', \
-  'reshape', 'reshape2', 'data.table', 'fastDummies' \
-  ), repos='https://cloud.r-project.org', Ncpus=4)"
-
-# ---- R packages: Database connectivity ----
-RUN R -e "install.packages(c( \
-  'DBI', 'RPostgreSQL', 'RSQLite', 'dbplyr' \
-  ), repos='https://cloud.r-project.org', Ncpus=4)"
-
-# ---- R packages: Documentation & development ----
-RUN R -e "install.packages(c( \
-  'knitr', 'rmarkdown', 'roxygen2', 'testthat' \
-  ), repos='https://cloud.r-project.org', Ncpus=4)"
-
-# ---- R packages: Web & data import ----
-RUN R -e "install.packages(c( \
-  'httr', 'jsonlite', 'rvest', 'curl' \
-  ), repos='https://cloud.r-project.org', Ncpus=4)"
-
-# ---- R packages: Module 1 - Data Exploration & Statistics ----
-RUN R -e "install.packages(c( \
+  'reshape', 'reshape2', 'data.table', 'fastDummies', \
+  'DBI', 'RPostgreSQL', 'RSQLite', 'dbplyr', \
+  'knitr', 'rmarkdown', 'roxygen2', 'testthat', \
+  'httr', 'jsonlite', 'rvest', 'curl', \
   'Hmisc', 'pastecs', 'psych', 'e1071', 'caret', \
-  'correlation', 'broom', 'scales' \
-  ), repos='https://cloud.r-project.org', Ncpus=4)"
-
-# ---- R packages: Module 2 - ANOVA, MANOVA, ANCOVA ----
-RUN R -e "install.packages(c( \
+  'correlation', 'broom', 'scales', \
   'car', 'effectsize', 'rstatix', 'multcomp', 'ggpubr', 'AICcmodavg', \
-  'MASS', 'mvnormalTest', 'heplots' \
-  ), repos='https://cloud.r-project.org', Ncpus=4)"
-
-# ---- R packages: Module 3 - PCA, PCR, MDS ----
-RUN R -e "install.packages(c( \
+  'MASS', 'mvnormalTest', 'heplots', \
   'corrr', 'corrplot', 'ggcorrplot', \
   'FactoMineR', 'factoextra', 'pls', \
-  'cluster', 'igraph' \
-  ), repos='https://cloud.r-project.org', Ncpus=4)"
-
-# ---- R packages: Module 4 - Factor Analysis & Conjoint ----
-RUN R -e "install.packages(c( \
+  'cluster', 'igraph', \
   'GPArotation', 'nFactors', 'conjoint', \
-  'lavaan', 'lavaanPlot', 'DiagrammeR' \
-  ), repos='https://cloud.r-project.org', Ncpus=4)"
-
-# ---- R packages: ML & Visualization ----
-RUN R -e "install.packages(c( \
+  'lavaan', 'lavaanPlot', 'DiagrammeR', \
   'class', 'randomForest', 'nnet', \
   'GGally', 'gridExtra', 'ggdendro', 'ggrepel', \
   'plotly', 'RColorBrewer', 'forecast' \
-  ), repos='https://cloud.r-project.org', Ncpus=4)"
+  ), Ncpus=8)"
 
 # ---- R packages: GitHub-only ----
 RUN R -e "devtools::install_github('gedeck/mlba/mlba', force=TRUE, upgrade='never')" && \
