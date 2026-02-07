@@ -45,26 +45,74 @@ RUN mamba install -c conda-forge -y --quiet \
     r-remotes && \
     mamba clean --all -f -y
 
-# ---- Python debugging support ----
-RUN pip install --no-cache-dir debugpy ipykernel
+# ---- Python packages (data science essentials) ----
+RUN pip install --no-cache-dir \
+    debugpy ipykernel \
+    openpyxl xlrd xlsxwriter \
+    statsmodels \
+    ipython-sql \
+    streamlit fastapi requests \
+    pytest pytest-cov \
+    black flake8 autopep8
 
-# ---- R packages: Core (assignments) ----
+# ---- R packages: Jupyter kernel & IDE support ----
 RUN R -e "install.packages(c( \
     'IRkernel', 'repr', 'IRdisplay', 'pbdZMQ', 'uuid', 'digest', \
-    'languageserver', 'httpgd', \
-    'tidyverse', 'dplyr', 'ggplot2', 'readr', 'tibble', \
-    'Hmisc', 'pastecs', 'psych', 'e1071', 'caret', \
-    'fastDummies', 'reshape2' \
+    'languageserver', 'httpgd' \
   ), repos='https://cloud.r-project.org', Ncpus=4)"
 
-# ---- R packages: ML / Visualization / Stats ----
+# ---- R packages: Core tidyverse & data manipulation ----
 RUN R -e "install.packages(c( \
-    'MASS', 'class', 'randomForest', 'nnet', \
-    'corrplot', 'ggcorrplot', 'GGally', 'gridExtra', 'ggdendro', 'ggrepel', \
-    'factoextra', 'FactoMineR', 'cluster', 'pls', \
-    'car', 'effectsize', 'rstatix', 'multcomp', 'ggpubr', \
-    'GPArotation', 'nFactors', 'lavaan', \
-    'DBI', 'RPostgreSQL', 'dbplyr', 'broom', 'scales' \
+    'tidyverse', 'dplyr', 'ggplot2', 'readr', 'tidyr', 'tibble', \
+    'stringr', 'forcats', 'lubridate', 'purrr', \
+    'reshape', 'reshape2', 'data.table', 'fastDummies' \
+  ), repos='https://cloud.r-project.org', Ncpus=4)"
+
+# ---- R packages: Database connectivity ----
+RUN R -e "install.packages(c( \
+    'DBI', 'RPostgreSQL', 'RSQLite', 'dbplyr' \
+  ), repos='https://cloud.r-project.org', Ncpus=4)"
+
+# ---- R packages: Documentation & development ----
+RUN R -e "install.packages(c( \
+    'knitr', 'rmarkdown', 'roxygen2', 'testthat' \
+  ), repos='https://cloud.r-project.org', Ncpus=4)"
+
+# ---- R packages: Web & data import ----
+RUN R -e "install.packages(c( \
+    'httr', 'jsonlite', 'rvest', 'curl' \
+  ), repos='https://cloud.r-project.org', Ncpus=4)"
+
+# ---- R packages: Module 1 - Data Exploration & Statistics ----
+RUN R -e "install.packages(c( \
+    'Hmisc', 'pastecs', 'psych', 'e1071', 'caret', \
+    'correlation', 'broom', 'scales' \
+  ), repos='https://cloud.r-project.org', Ncpus=4)"
+
+# ---- R packages: Module 2 - ANOVA, MANOVA, ANCOVA ----
+RUN R -e "install.packages(c( \
+    'car', 'effectsize', 'rstatix', 'multcomp', 'ggpubr', 'AICcmodavg', \
+    'MASS', 'mvnormalTest', 'heplots' \
+  ), repos='https://cloud.r-project.org', Ncpus=4)"
+
+# ---- R packages: Module 3 - PCA, PCR, MDS ----
+RUN R -e "install.packages(c( \
+    'corrr', 'corrplot', 'ggcorrplot', \
+    'FactoMineR', 'factoextra', 'pls', \
+    'cluster', 'igraph' \
+  ), repos='https://cloud.r-project.org', Ncpus=4)"
+
+# ---- R packages: Module 4 - Factor Analysis & Conjoint ----
+RUN R -e "install.packages(c( \
+    'GPArotation', 'nFactors', 'conjoint', \
+    'lavaan', 'lavaanPlot', 'DiagrammeR' \
+  ), repos='https://cloud.r-project.org', Ncpus=4)"
+
+# ---- R packages: ML & Visualization ----
+RUN R -e "install.packages(c( \
+    'class', 'randomForest', 'nnet', \
+    'GGally', 'gridExtra', 'ggdendro', 'ggrepel', \
+    'plotly', 'RColorBrewer', 'forecast' \
   ), repos='https://cloud.r-project.org', Ncpus=4)"
 
 # ---- R packages: GitHub-only ----

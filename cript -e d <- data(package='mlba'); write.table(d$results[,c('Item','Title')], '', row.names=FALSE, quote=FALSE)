@@ -1,0 +1,94 @@
+Data sets in package ‘mlba’:
+
+Accidents               Accidents
+Accidents (accidents)   Accidents
+Accidents1000           Accidents1000
+AccidentsFull           Accidents
+AccidentsFull (accidentsFull)
+                        Accidents
+AccidentsNN             AccidentsNN
+AccidentsNN (accidentsnn)
+                        AccidentsNN
+Airfares                Airfares
+Amtrak                  Amtrak
+ApplianceShipments      Applicance Shipments
+AustralianWines         AustralianWines
+BankBiasData            BankBiasData
+Banks                   Banks
+Banks (banks)           Banks
+BareggTunnel            BareggTunnel
+BathSoapHousehold       BathSoapHousehold
+Bicup2006               Bicup2006
+Bicup2006 (bicup2006)   Bicup2006
+BostonHousing           Boston Housing
+CanadianWorkHours       CanadianWorkHours
+CatalogCrossSell        CatalogCrossSell
+Cereals                 Cereals
+CharlesBookClub         Charles Book Club
+COMPAS_clean            COMPAS clean
+Cosmetics               Cosmetics
+CourseRating            CourseRating
+CourseRating (courserating)
+                        CourseRating
+CourseTopics            CourseTopics
+CourseTopics (Coursetopics)
+                        CourseTopics
+DepartmentStoreSales    DepartmentStoreSales
+Drug                    Drug
+Drug (drug)             Drug
+EastWestAirlinesCluster
+                        EastWestAirlinesCluster
+EastWestAirlinesNN      EastWestAirlinesNN
+eBayAuctions            ebay Auctions
+eBayNetwork             ebay Network
+eBayTreemap             ebay Treemap
+EmailABtest             EmailABtest
+Faceplate               Faceplate
+FarmAds                 FarmAds
+FlightDelays            Flight delays
+Fundraising             Fundraising
+FutureFundraising       FutureFundraising
+GDP                     GDP
+GDP (gdp)               GDP
+GermanCredit            German credit
+HairCareProduct         Hair Care Product
+IMDBdataset10K          IMDBdataset10K
+LaptopSales             Laptop Sales
+LaptopSalesJanuary2008
+                        Laptop Sales January 2008
+LiftExample             LiftExample
+LiftExample (liftExample)
+                        LiftExample
+MovieLensMovies         MovieLensMovies
+MovieLensRatings        MovieLensRatings
+NaturalGasSales         NaturalGasSales
+NYPDMotorVehicleCollisions
+                        NYPD Motor Vehicle Collisions
+OwnerExample            OwnerExample
+OwnerExample (ownerExample)
+                        OwnerExample
+Pharmaceuticals         Pharmaceuticals
+RidingMowers            Riding Mowers
+SCstudents              statistics.com Students
+Sept11Travel            Sept11Travel
+ShampooSales            ShampooSales
+SouvenirSales           SouvenirSales
+SP500                   SP500
+Spambase                Spambase
+Spambase (spambase)     Spambase
+SystemAdministrators    System Administrator
+TaxiCancellationCase    Taxi Cancellation Case
+Tayko                   Tayko
+TinyData                TinyData
+ToyotaCorolla           Toyoto Corolla
+ToysRUsRevenues         ToysRUsRevenues
+UniversalBank           UniversalBank
+UniversalBankCase       UniversalBankCase
+Universities            Universities
+Utilities               Utilities
+Veerhoven               Veerhoven.
+VoterPersuasion         VoterPersuasion
+WalMartStock            WalMartStock
+WestRoxbury             West Roxbury.
+Wine                    Wine.
+
