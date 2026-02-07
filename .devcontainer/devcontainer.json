@@ -60,7 +60,31 @@
         "r.rterm.option": [],
         "r.bracketedPaste": true,
         "r.lsp.enabled": true,
+        "r.lsp.args": ["--no-save", "--no-restore"],
         "r.debugger.timeouts.startup": 10000,
+        
+        // === R INTELLISENSE / AUTOCOMPLETE ===
+        "r.session.levelOfObjectDetail": "Detailed",
+        "r.plot.useHttpgd": true,
+        "[r]": {
+          "editor.quickSuggestions": {
+            "other": true,
+            "comments": false,
+            "strings": true
+          },
+          "editor.suggest.showMethods": true,
+          "editor.suggest.showFunctions": true,
+          "editor.suggest.showVariables": true,
+          "editor.suggest.showKeywords": true,
+          "editor.acceptSuggestionOnEnter": "on",
+          "editor.suggestOnTriggerCharacters": true,
+          "editor.tabCompletion": "on"
+        },
+        
+        // === NOTEBOOK INTELLISENSE ===
+        "notebook.lineNumbers": "on",
+        "jupyter.completionTriggerCharacters": ["."],
+        
         "jupyter.jupyterServerType": "local",
         "jupyter.kernels.filter": [],
         "files.associations": {
