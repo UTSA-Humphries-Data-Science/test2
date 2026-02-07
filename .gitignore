@@ -18,7 +18,9 @@ env/
 
 # GitHub Classroom autograding (hide from students)
 .github/classroom/
-.github/workflows/
+# Allow container build workflow, ignore others
+.github/workflows/*
+!.github/workflows/build-container.yml
 
 # Keep the hidden config directory for instructor setup
 !.config/
