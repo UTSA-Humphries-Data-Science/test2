@@ -1,131 +1,40 @@
 #!/bin/bash
-# Optimized post-start script - runs every time the codespace starts/resumes
-# Uses apt-installed PostgreSQL with student user (no password)
-# NOTE: This script runs after postCreateCommand has set up passwordless sudo
+# postStartCommand — runs every time the codespace starts/resumes.
+# Only starts services; everything else is baked into the Docker image.
 
-echo "🔄 Post-start: Verifying environment..."
-
-# Source environment
+echo "🔄 Starting services..."
 source ~/.bashrc 2>/dev/null || true
-cd /workspaces/test2 2>/dev/null || true
 
-# Set PostgreSQL environment - student user (no password)
-export PGUSER=student
-export PGDATABASE=postgres
-export PGHOST=localhost
-export PGPORT=5432
-
-# ============================================
-# Check 1: Start PostgreSQL service if not running
-# ============================================
-# Try with sudo (should be passwordless after postCreateCommand)
-if sudo -n service postgresql status >/dev/null 2>&1; then
-    echo "✅ PostgreSQL running"
-elif sudo -n true 2>/dev/null; then
-    echo "🚀 Starting PostgreSQL service..."
+# Start PostgreSQL
+if ! sudo -n service postgresql status >/dev/null 2>&1; then
     sudo service postgresql start
     sleep 2
-    echo "✅ PostgreSQL started"
-else
-    # No sudo available, try psql directly to see if it works
-    if psql -U student -h localhost -c "SELECT 1;" >/dev/null 2>&1; then
-        echo "✅ PostgreSQL running (connected as student)"
-    else
-        echo "⚠️ PostgreSQL status unknown - may need manual start"
-    fi
+fi
+echo "✅ PostgreSQL running"
+
+# Ensure student user exists (idempotent)
+sudo -u postgres psql -c "CREATE USER student WITH SUPERUSER CREATEDB;" 2>/dev/null || true
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE postgres TO student;" 2>/dev/null || true
+
+# Load sample databases if they exist and haven't been loaded
+if [ -d "/workspaces/test2/databases" ]; then
+    for sql_file in /workspaces/test2/databases/*.sql; do
+        [ -f "$sql_file" ] || continue
+        db_name=$(basename "$sql_file" .sql)
+        psql -U student -h localhost -d postgres -f "$sql_file" 2>/dev/null || true
+    done
 fi
 
-# ============================================
-# Check 2: Ensure student user exists (if we have sudo)
-# ============================================
-if sudo -n true 2>/dev/null; then
-    if ! sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='student'" 2>/dev/null | grep -q 1; then
-        echo "👤 Creating student user..."
-        sudo -u postgres psql -c "CREATE USER student WITH SUPERUSER CREATEDB;" 2>/dev/null
-    fi
-fi
-echo "✅ Student user configured"
-
-# ============================================
-# Check 3: Configure student user for database
-# ============================================
-if [ -f "/workspaces/test2/scripts/setup_student_primary.sh" ]; then
-    bash /workspaces/test2/scripts/setup_student_primary.sh 2>/dev/null
-fi
-
-# Load sample databases if script exists
-if [ -f "/workspaces/test2/scripts/load_all_sample_databases.sh" ]; then
-    bash /workspaces/test2/scripts/load_all_sample_databases.sh 2>/dev/null
-fi
-
-# ============================================
-# Check 4: Verify R kernel
-# ============================================
+# Ensure R kernel is registered
 if ! jupyter kernelspec list 2>/dev/null | grep -q "ir"; then
-    echo "⚠️ R kernel missing, registering..."
-    R --quiet --no-save -e "IRkernel::installspec(user = TRUE)" 2>/dev/null
+    R --quiet --no-save -e "IRkernel::installspec(user=TRUE)" 2>/dev/null
 fi
-echo "✅ R kernel available"
 
-# ============================================
-# Check 5: Verify mlba package
-# ============================================
-R --quiet --no-save << 'EOF' 2>/dev/null
-if (!requireNamespace("mlba", quietly = TRUE)) {
-    cat("⚠️ mlba package missing, installing from GitHub...\n")
-    if (requireNamespace("devtools", quietly = TRUE)) {
-        tryCatch({
-            devtools::install_github("gedeck/mlba/mlba", quiet = TRUE, upgrade = "never")
-            cat("✅ mlba package installed\n")
-        }, error = function(e) {
-            cat("⚠️ mlba installation failed - students should run:\n")
-            cat("   devtools::install_github('gedeck/mlba/mlba')\n")
-        })
-    }
-} else {
-    cat("✅ mlba package available\n")
-}
-EOF
-
-# ============================================
-# Ensure Git is configured for commits
-# ============================================
-echo "🔧 Configuring Git..."
+# Ensure Git config
 git config --global commit.gpgsign false 2>/dev/null || true
 git config --global tag.gpgsign false 2>/dev/null || true
-git config --local commit.gpgsign false 2>/dev/null || true
-git config --local tag.gpgsign false 2>/dev/null || true
 
-# Set default branch to main
-git config --global init.defaultBranch main 2>/dev/null || true
-
-# Set up basic user info if not set
-if [ -z "$(git config --get user.name)" ]; then
-    git config --global user.name "Data Science Student"
-fi
-
-if [ -z "$(git config --get user.email)" ]; then
-    git config --global user.email "student@example.com"
-fi
-
-# Ensure git is recognized in this workspace
-if git status >/dev/null 2>&1; then
-    echo "✅ Git repository configured"
-else
-    echo "⚠️ Not in a Git repository"
-fi
-
-# ============================================
-# Final status
-# ============================================
 echo ""
 echo "════════════════════════════════════════════"
 echo "✅ Environment ready for data science work!"
 echo "════════════════════════════════════════════"
-echo ""
-echo "💡 Quick commands:"
-echo "   📊 Open notebooks in the Lecture/ folder"
-echo "   🗄️ psql - Connect to database as student (no password)"
-echo "   📈 sudo service postgresql status - Check PostgreSQL"
-echo "   🔍 check_status - Full environment check"
-echo ""
