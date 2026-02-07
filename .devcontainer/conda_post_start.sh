@@ -25,10 +25,13 @@ if [ -d "/workspaces/test2/databases" ]; then
     done
 fi
 
-# Ensure R kernel is registered
+# Ensure R kernel is registered and refresh Jupyter
 if ! jupyter kernelspec list 2>/dev/null | grep -q "ir"; then
     R --quiet --no-save -e "IRkernel::installspec(user=TRUE)" 2>/dev/null
 fi
+
+# Force Jupyter to recognize all kernels (helps VS Code pickup)
+jupyter kernelspec list > /dev/null 2>&1
 
 # Ensure Git config
 git config --global commit.gpgsign false 2>/dev/null || true
