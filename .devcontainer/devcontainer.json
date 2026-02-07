@@ -1,8 +1,9 @@
 {
   "name": "Data Science Classroom",
-  "build": {
-    "dockerfile": "Dockerfile"
-  },
+  
+  // Use pre-built image from GHCR for fast startup (~2 min vs ~15 min)
+  // Falls back to building if image not available
+  "image": "ghcr.io/utsa-humphries-data-science/test2:latest",
   
   // Container settings
   "overrideCommand": false,
@@ -15,7 +16,7 @@
   },
   
   // postCreateCommand runs as jovyan (system packages already installed via Dockerfile)
-  "postCreateCommand": "bash /workspaces/test2/.devcontainer/conda_setup.sh",
+  "postCreateCommand": "bash /workspaces/test2/.devcontainer/conda_setup.sh || true",
   "postStartCommand": "bash /workspaces/test2/.devcontainer/conda_post_start.sh",
 
   "customizations": {
