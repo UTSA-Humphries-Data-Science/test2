@@ -44,7 +44,12 @@
       ],
       "settings": {
         // === DISABLE SETTINGS SYNC COMPLETELY ===
+        // This prevents old/conflicting extensions from being synced
         "settingsSync.enable": false,
+        
+        // === UNWANTED EXTENSIONS (do not install these) ===
+        // mikhail-arkhipov.r - Old R Tools, requires .NET, conflicts with reditorsupport.r
+        "extensions.ignoreRecommendations": true,
         
         // === AUTO-UPDATE EXTENSIONS ===
         "extensions.autoUpdate": true,
