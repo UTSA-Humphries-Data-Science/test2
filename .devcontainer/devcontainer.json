@@ -22,10 +22,14 @@
     "vscode": {
       "extensions": [
         "ms-python.python",
+        "ms-python.debugpy",
         "ms-toolsai.jupyter",
+        "ms-toolsai.jupyter-keymap",
+        "ms-toolsai.jupyter-renderers",
         "ms-toolsai.vscode-jupyter-cell-tags",
         "ms-toolsai.vscode-jupyter-slideshow",
         "reditorsupport.r",
+        "rdebugger.r-debugger",
         "ckolkman.vscode-postgres",
         "mtxr.sqltools",
         "mtxr.sqltools-driver-pg",
@@ -53,6 +57,9 @@
         "r.alwaysUseActiveTerminal": true,
         "r.lsp.promptToInstall": false,
         "r.rterm.option": [],
+        "r.bracketedPaste": true,
+        "r.lsp.enabled": true,
+        "r.debugger.timeouts.startup": 10000,
         "jupyter.jupyterServerType": "local",
         "jupyter.kernels.filter": [],
         "files.associations": {
