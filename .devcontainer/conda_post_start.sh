@@ -26,12 +26,18 @@ if [ -d "/workspaces/test2/databases" ]; then
 fi
 
 # Ensure R kernel is registered and refresh Jupyter
-if ! jupyter kernelspec list 2>/dev/null | grep -q "ir"; then
-    R --quiet --no-save -e "IRkernel::installspec(user=TRUE)" 2>/dev/null
-fi
+# Re-register kernel on every start to ensure VS Code detects it
+R --quiet --no-save -e "IRkernel::installspec(user=FALSE)" 2>/dev/null || true
 
 # Force Jupyter to recognize all kernels (helps VS Code pickup)
 jupyter kernelspec list > /dev/null 2>&1
+
+# Touch kernel files to update timestamps (helps VS Code detect changes)
+touch /opt/conda/share/jupyter/kernels/ir/kernel.json 2>/dev/null || true
+touch ~/.local/share/jupyter/kernels/*/kernel.json 2>/dev/null || true
+
+# Small delay to let VS Code Jupyter extension pick up kernels
+sleep 1
 
 # Ensure Git config
 git config --global commit.gpgsign false 2>/dev/null || true
