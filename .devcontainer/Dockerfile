@@ -31,18 +31,22 @@ RUN chown -R jovyan:users /home/jovyan
 USER jovyan
 
 # ---- Conda packages (binary, fast) ----
+# Install as many R packages as possible via mamba (pre-compiled, instant)
 RUN mamba install -c conda-forge -y --quiet \
-  psycopg2 \
-  sqlalchemy \
-  plotly \
-  bokeh \
-  lxml \
-  beautifulsoup4 \
-  nodejs \
-  gh \
-  imagemagick \
-  r-devtools \
-  r-remotes && \
+  psycopg2 sqlalchemy plotly bokeh lxml beautifulsoup4 nodejs gh imagemagick \
+  r-devtools r-remotes r-irkernel r-languageserver \
+  r-tidyverse r-dplyr r-ggplot2 r-readr r-tidyr r-tibble \
+  r-stringr r-forcats r-lubridate r-purrr \
+  r-reshape2 r-data.table \
+  r-dbi r-rsqlite r-dbplyr \
+  r-knitr r-rmarkdown r-testthat \
+  r-httr r-jsonlite r-rvest r-curl \
+  r-hmisc r-psych r-e1071 r-caret r-broom r-scales \
+  r-car r-mass r-multcomp r-ggpubr \
+  r-corrplot r-factominer r-factoextra r-pls r-cluster r-igraph \
+  r-gparotation r-lavaan r-diagrammer \
+  r-class r-randomforest r-nnet \
+  r-ggally r-gridextra r-ggrepel r-plotly r-rcolorbrewer r-forecast && \
   mamba clean --all -f -y
 
 # ---- Python packages (data science essentials) ----
@@ -55,30 +59,16 @@ RUN pip install --no-cache-dir \
   pytest pytest-cov \
   black flake8 autopep8
 
-# ---- R packages: Use Posit Package Manager for PRE-COMPILED binaries (MUCH faster) ----
-# This uses pre-built binaries instead of compiling from source
+# ---- R packages: Only packages NOT available in conda ----
 RUN R -e "options(repos = c(CRAN = 'https://packagemanager.posit.co/cran/__linux__/jammy/latest')); \
   install.packages(c( \
-  'IRkernel', 'repr', 'IRdisplay', 'pbdZMQ', 'uuid', 'digest', \
-  'languageserver', 'httpgd', \
-  'tidyverse', 'dplyr', 'ggplot2', 'readr', 'tidyr', 'tibble', \
-  'stringr', 'forcats', 'lubridate', 'purrr', \
-  'reshape', 'reshape2', 'data.table', 'fastDummies', \
-  'DBI', 'RPostgreSQL', 'RSQLite', 'dbplyr', \
-  'knitr', 'rmarkdown', 'roxygen2', 'testthat', \
-  'httr', 'jsonlite', 'rvest', 'curl', \
-  'Hmisc', 'pastecs', 'psych', 'e1071', 'caret', \
-  'correlation', 'broom', 'scales', \
-  'car', 'effectsize', 'rstatix', 'multcomp', 'ggpubr', 'AICcmodavg', \
-  'MASS', 'mvnormalTest', 'heplots', \
-  'corrr', 'corrplot', 'ggcorrplot', \
-  'FactoMineR', 'factoextra', 'pls', \
-  'cluster', 'igraph', \
-  'GPArotation', 'nFactors', 'conjoint', \
-  'lavaan', 'lavaanPlot', 'DiagrammeR', \
-  'class', 'randomForest', 'nnet', \
-  'GGally', 'gridExtra', 'ggdendro', 'ggrepel', \
-  'plotly', 'RColorBrewer', 'forecast' \
+  'httpgd', 'repr', 'IRdisplay', 'pbdZMQ', 'uuid', 'digest', \
+  'reshape', 'fastDummies', 'RPostgreSQL', 'roxygen2', \
+  'pastecs', 'correlation', \
+  'effectsize', 'rstatix', 'AICcmodavg', 'mvnormalTest', 'heplots', \
+  'corrr', 'ggcorrplot', \
+  'nFactors', 'conjoint', 'lavaanPlot', \
+  'ggdendro' \
   ), Ncpus=8)"
 
 # ---- R packages: GitHub-only ----
