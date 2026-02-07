@@ -117,6 +117,11 @@
         "notebook.kernelPicker.type": "mru",
         "jupyter.askForKernelRestart": false,
         
+        // Disable test discovery (not needed for classroom, prevents error popup)
+        "python.testing.pytestEnabled": false,
+        "python.testing.unittestEnabled": false,
+        "testing.autoRun.mode": "off",
+        
         // Welcome page and tour settings
         "workbench.startupEditor": "readme"
       }
