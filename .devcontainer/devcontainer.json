@@ -16,8 +16,9 @@
   },
   
   // postCreateCommand runs as jovyan (system packages already installed via Dockerfile)
-  "postCreateCommand": "bash /workspaces/test2/.devcontainer/conda_setup.sh || true",
-  "postStartCommand": "bash /workspaces/test2/.devcontainer/conda_post_start.sh",
+  // Use ${containerWorkspaceFolder} for dynamic path that works with any repo name
+  "postCreateCommand": "bash ${containerWorkspaceFolder}/.devcontainer/conda_setup.sh || true",
+  "postStartCommand": "bash ${containerWorkspaceFolder}/.devcontainer/conda_post_start.sh",
 
   "customizations": {
     "vscode": {

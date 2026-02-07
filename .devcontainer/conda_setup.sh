@@ -37,8 +37,9 @@ sudo -u postgres psql -c "CREATE USER vscode WITH SUPERUSER CREATEDB;" 2>/dev/nu
 sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE postgres TO vscode;" 2>/dev/null || true
 
 # Load sample databases if SQL files exist
-if [ -d "/workspaces/test2/databases" ]; then
-    for sql_file in /workspaces/test2/databases/*.sql; do
+WORKSPACE_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+if [ -d "$WORKSPACE_DIR/databases" ]; then
+    for sql_file in $WORKSPACE_DIR/databases/*.sql; do
         [ -f "$sql_file" ] || continue
         db_name=$(basename "$sql_file" .sql)
         echo "  📊 Loading $db_name..."
@@ -64,7 +65,8 @@ alias pg_stop='sudo service postgresql stop'
 alias pg_status='sudo service postgresql status'
 alias pg_restart='sudo service postgresql restart'
 alias db='psql -U student -h localhost postgres'
-alias check_status='/workspaces/test2/scripts/check_environment.sh'
+# check_status alias - works from any workspace
+alias check_status='bash $(find /workspaces -maxdepth 2 -name "check_environment.sh" 2>/dev/null | head -1)'
 BASHRC
 fi
 

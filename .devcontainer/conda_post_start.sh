@@ -17,8 +17,9 @@ sudo -u postgres psql -c "CREATE USER student WITH SUPERUSER CREATEDB;" 2>/dev/n
 sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE postgres TO student;" 2>/dev/null || true
 
 # Load sample databases if they exist and haven't been loaded
-if [ -d "/workspaces/test2/databases" ]; then
-    for sql_file in /workspaces/test2/databases/*.sql; do
+WORKSPACE_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+if [ -d "$WORKSPACE_DIR/databases" ]; then
+    for sql_file in $WORKSPACE_DIR/databases/*.sql; do
         [ -f "$sql_file" ] || continue
         db_name=$(basename "$sql_file" .sql)
         psql -U student -h localhost -d postgres -f "$sql_file" 2>/dev/null || true
