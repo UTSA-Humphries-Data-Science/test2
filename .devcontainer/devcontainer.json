@@ -77,9 +77,11 @@
           "source.organizeImports": "explicit"
         },
         
-        // === ADD THESE COPILOT RESTRICTIONS FOR CLASSROOM USE ===
-        // Disable GitHub Copilot Agent Mode (the autonomous AI assistant)
+        // === COPILOT RESTRICTIONS FOR CLASSROOM USE ===
+        // Disable Agent Mode completely (all variations of the setting)
         "chat.agent.enabled": false,
+        "github.copilot.chat.agent.enabled": false,
+        "chat.agentMode.enabled": false,
         
         // Disable advanced Copilot features that could be used for cheating
         "github.copilot.editor.enableCodeActions": false,
@@ -87,9 +89,9 @@
         "github.copilot.renameSuggestions.triggerAutomatically": false,
         "github.copilot.chat.agent.runTasks": false,
         "github.copilot.chat.codesearch.enabled": false,
+        "github.copilot.chat.edits.enabled": false,
         
-        // Keep basic completions enabled but restrict advanced features
-        // If you want to disable Copilot completely, uncomment this line:
+        // Disable inline completions if you want students to type code themselves
         // "github.copilot.enable": false,
         
         "sqltools.connections": [
